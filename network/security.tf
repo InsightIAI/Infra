@@ -127,6 +127,32 @@ resource "aws_security_group" "endpoint_ecr_sg" {
   }
 }
 
+# ─── CloudWatch Logs (backend + frontend) ─────────────────────────────────────
+
+resource "aws_security_group" "endpoint_cloudwatch_sg" {
+  name   = "${var.project_name}-endpoint-cloudwatch-sg"
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [aws_subnet.sn_frontend.cidr_block, aws_subnet.sn_backend.cidr_block]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    project = var.project_name
+    Name    = "${var.project_name}-endpoint-cloudwatch-sg"
+  }
+}
+
 # ─── Aurora ──────────────────────────────────────────────────────────────────
 # Ingress basado en CIDR de sn_backend para evitar dependencia circular con backend_sg.
 
@@ -174,6 +200,20 @@ resource "aws_security_group" "backend_sg" {
     security_groups = [aws_security_group.endpoint_ecr_sg.id]
   }
 
+  egress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.endpoint_cloudwatch_sg.id]
+  }
+
+  egress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [aws_vpc_endpoint.s3.prefix_list_id]
+  }
+
   tags = {
     project = var.project_name
     Name    = "${var.project_name}-backend-sg"
@@ -188,6 +228,16 @@ resource "aws_security_group_rule" "backend_ingress_from_frontend" {
   protocol                 = "tcp"
   security_group_id        = aws_security_group.backend_sg.id
   source_security_group_id = aws_security_group.frontend_sg.id
+}
+
+# Ingreso desde ALB para health checks y tráfico directo.
+resource "aws_security_group_rule" "backend_ingress_from_alb" {
+  type                     = "ingress"
+  from_port                = var.backend_port
+  to_port                  = var.backend_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.backend_sg.id
+  source_security_group_id = aws_security_group.alb_sg.id
 }
 
 # ─── Frontend ─────────────────────────────────────────────────────────────────
@@ -229,6 +279,20 @@ resource "aws_security_group" "frontend_sg" {
     to_port         = 443
     protocol        = "tcp"
     security_groups = [aws_security_group.endpoint_ecr_sg.id]
+  }
+
+  egress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.endpoint_cloudwatch_sg.id]
+  }
+
+  egress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    prefix_list_ids = [aws_vpc_endpoint.s3.prefix_list_id]
   }
 
   tags = {
