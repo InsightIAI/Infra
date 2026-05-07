@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 # ─── VPC Link → ALB ──────────────────────────────────────────────────────────
 
 resource "aws_security_group" "vpclink_sg" {
