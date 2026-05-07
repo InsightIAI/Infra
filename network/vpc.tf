@@ -20,14 +20,14 @@ resource "aws_subnet" "sn_backend" {
   }
 }
 
-resource "aws_subnet" "sn_backend_az2" {
+resource "aws_subnet" "sn_database_az2" {
   vpc_id = aws_vpc.main.id
   cidr_block = cidrsubnet(aws_vpc.main.cidr_block, 4, 4)
   availability_zone = "us-east-1b"
 
   tags = {
     "project" = var.project_name,
-    Name = "${var.project_name}-backend-subnet-az2"
+    Name = "${var.project_name}-database-subnet-az2"
   }
 }
 
@@ -56,8 +56,8 @@ resource "aws_route_table_association" "rt_backend" {
   route_table_id = aws_route_table.rt_private.id
 }
 
-resource "aws_route_table_association" "rt_backend_az2" {
-  subnet_id = aws_subnet.sn_backend_az2.id
+resource "aws_route_table_association" "rt_database_az2" {
+  subnet_id = aws_subnet.sn_database_az2.id
   route_table_id = aws_route_table.rt_private.id
 }
 
