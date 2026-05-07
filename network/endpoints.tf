@@ -1,12 +1,12 @@
-data "aws_region" "current" {}
+# ─── ECR (frontend + backend) ─────────────────────────────────────────────────
 
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${data.aws_region.current.region}.ecr.api"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.api"
   vpc_endpoint_type   = "Interface"
-  # subnet_ids          = [aws_subnet.sn_backend.id, aws_subnet.sn_backend_az2.id, aws_subnet.sn_frontend.id]
-  security_group_ids  = [aws_security_group.endpoint_sg.id]
-  private_dns_enabled = false
+  subnet_ids          = [aws_subnet.sn_backend.id, aws_subnet.sn_frontend.id]
+  security_group_ids  = [aws_security_group.endpoint_ecr_sg.id]
+  private_dns_enabled = true
 
   tags = {
     project = var.project_name
@@ -16,11 +16,11 @@ resource "aws_vpc_endpoint" "ecr_api" {
 
 resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${data.aws_region.current.region}.ecr.dkr"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.dkr"
   vpc_endpoint_type   = "Interface"
-  # subnet_ids          = [aws_subnet.sn_backend.id, aws_subnet.sn_backend_az2.id, aws_subnet.sn_frontend.id]
-  security_group_ids  = [aws_security_group.endpoint_sg.id]
-  private_dns_enabled = false
+  subnet_ids          = [aws_subnet.sn_backend.id, aws_subnet.sn_frontend.id]
+  security_group_ids  = [aws_security_group.endpoint_ecr_sg.id]
+  private_dns_enabled = true
 
   tags = {
     project = var.project_name
@@ -28,13 +28,15 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   }
 }
 
+# ─── Cognito (solo frontend) ──────────────────────────────────────────────────
+
 resource "aws_vpc_endpoint" "cognito_idp" {
   vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${data.aws_region.current.region}.cognito-idp"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.cognito-idp"
   vpc_endpoint_type   = "Interface"
-  # subnet_ids          = [aws_subnet.sn_backend.id, aws_subnet.sn_backend_az2.id, aws_subnet.sn_frontend.id]
-  security_group_ids  = [aws_security_group.endpoint_sg.id]
-  private_dns_enabled = false
+  subnet_ids          = [aws_subnet.sn_frontend.id]
+  security_group_ids  = [aws_security_group.endpoint_cognito_sg.id]
+  private_dns_enabled = true
 
   tags = {
     project = var.project_name
@@ -42,12 +44,14 @@ resource "aws_vpc_endpoint" "cognito_idp" {
   }
 }
 
+# ─── Bedrock (solo backend) ───────────────────────────────────────────────────
+
 resource "aws_vpc_endpoint" "bedrock" {
   vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${data.aws_region.current.region}.bedrock"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.bedrock"
   vpc_endpoint_type   = "Interface"
-  # subnet_ids          = [aws_subnet.sn_backend.id, aws_subnet.sn_backend_az2.id, aws_subnet.sn_frontend.id]
-  security_group_ids  = [aws_security_group.endpoint_sg.id]
+  subnet_ids          = [aws_subnet.sn_backend.id]
+  security_group_ids  = [aws_security_group.endpoint_bedrock_sg.id]
   private_dns_enabled = false
 
   tags = {
@@ -58,10 +62,10 @@ resource "aws_vpc_endpoint" "bedrock" {
 
 resource "aws_vpc_endpoint" "bedrock_runtime" {
   vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${data.aws_region.current.region}.bedrock-runtime"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.bedrock-runtime"
   vpc_endpoint_type   = "Interface"
-  # subnet_ids          = [aws_subnet.sn_backend.id, aws_subnet.sn_backend_az2.id, aws_subnet.sn_frontend.id]
-  security_group_ids  = [aws_security_group.endpoint_sg.id]
+  subnet_ids          = [aws_subnet.sn_backend.id]
+  security_group_ids  = [aws_security_group.endpoint_bedrock_sg.id]
   private_dns_enabled = true
 
   tags = {

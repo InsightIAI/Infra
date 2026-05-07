@@ -10,12 +10,12 @@ output "backend_subnet_id" {
   value = aws_subnet.sn_backend.id
 }
 
-output "backend_subnet_az2_id" {
-  value = aws_subnet.sn_backend_az2.id
+output "database_subnet_az2_id" {
+  value = aws_subnet.sn_database_az2.id
 }
 
 output "backend_subnet_ids" {
-  value = [aws_subnet.sn_backend.id, aws_subnet.sn_backend_az2.id]
+  value = [aws_subnet.sn_backend.id, aws_subnet.sn_database_az2.id]
 }
 
 output "frontend_subnet_id" {
@@ -29,7 +29,6 @@ output "backend_sg_id" {
 output "frontend_sg_id" {
   value = aws_security_group.frontend_sg.id
 }
-
 
 output "vpc_id" {
   value = aws_vpc.main.id
