@@ -33,6 +33,13 @@ resource "aws_security_group" "alb_sg" {
   }
 
   ingress {
+    from_port       = 81
+    to_port         = 81
+    protocol        = "tcp"
+    security_groups = [aws_security_group.vpclink_sg.id]
+  }
+
+  ingress {
     from_port       = 443
     to_port         = 443
     protocol        = "tcp"
@@ -247,8 +254,8 @@ resource "aws_security_group" "frontend_sg" {
   vpc_id = aws_vpc.main.id
 
   ingress {
-    from_port       = 80
-    to_port         = 80
+    from_port       = 81
+    to_port         = 81
     protocol        = "tcp"
     security_groups = [aws_security_group.alb_sg.id]
   }
@@ -261,8 +268,8 @@ resource "aws_security_group" "frontend_sg" {
   }
 
   egress {
-    from_port       = 3000
-    to_port         = 3000
+    from_port       = 80
+    to_port         = 80
     protocol        = "tcp"
     security_groups = [aws_security_group.backend_sg.id]
   }
