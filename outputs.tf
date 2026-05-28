@@ -30,18 +30,6 @@ output "backend_alb_dns_name" {
   value = module.fargate.alb_dns_name
 }
 
-output "cognito_user_pool_id" {
-  value = module.cognito.user_pool_id
-}
-
-output "cognito_client_id" {
-  value = module.cognito.client_id
-}
-
-output "cognito_domain_url" {
-  value = module.cognito.cognito_domain_url
-}
-
 output "aurora_cluster_endpoint" {
   value = module.database.aurora_cluster_endpoint
 }
