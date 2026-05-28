@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "insight-ai-terraform-locks-638183259942-us-east-1-an"
+    bucket = "insight-ai-tf-locks"
     key    = "general/terraform.tfstate"
     region = "us-east-1"
   }

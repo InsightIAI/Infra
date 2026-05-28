@@ -11,3 +11,8 @@ variable "aurora_port" {
   type        = number
   default     = 5432
 }
+
+variable "backend_port" {
+  type        = number
+  default     = 80
+}
