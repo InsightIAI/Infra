@@ -28,6 +28,18 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   }
 }
 
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = [aws_route_table.rt_private.id]
+
+  tags = {
+    project = var.project_name
+    Name    = "${var.project_name}-s3-endpoint"
+  }
+}
+
 # ─── Cognito (solo frontend) ──────────────────────────────────────────────────
 
 resource "aws_vpc_endpoint" "cognito_idp" {
@@ -71,5 +83,20 @@ resource "aws_vpc_endpoint" "bedrock_runtime" {
   tags = {
     project = var.project_name
     Name    = "${var.project_name}-bedrock-runtime-endpoint"
+  }
+}
+# ─── CloudWatch Logs (backend + frontend) ─────────────────────────────────────
+
+resource "aws_vpc_endpoint" "cloudwatch_logs" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.logs"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [aws_subnet.sn_backend.id, aws_subnet.sn_frontend.id]
+  security_group_ids  = [aws_security_group.endpoint_cloudwatch_sg.id]
+  private_dns_enabled = true
+
+  tags = {
+    project = var.project_name
+    Name    = "${var.project_name}-cloudwatch-logs-endpoint"
   }
 }

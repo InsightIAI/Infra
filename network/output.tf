@@ -6,6 +6,10 @@ output "alb_sg_id" {
   value = aws_security_group.alb_sg.id
 }
 
+output "vpclink_sg_id" {
+  value = aws_security_group.vpclink_sg.id
+}
+
 output "backend_subnet_id" {
   value = aws_subnet.sn_backend.id
 }
@@ -40,4 +44,8 @@ output "bedrock_endpoint_id" {
 
 output "bedrock_runtime_endpoint_id" {
   value = aws_vpc_endpoint.bedrock_runtime.id
+}
+
+output "cloudwatch_logs_endpoint_id" {
+  value = aws_vpc_endpoint.cloudwatch_logs.id
 }
